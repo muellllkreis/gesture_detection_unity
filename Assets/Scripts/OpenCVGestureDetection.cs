@@ -26,6 +26,9 @@ internal static class OpenCVInterop {
 
     [DllImport("gestures")]
     internal static extern void getHandCenter(ref Position handPos);
+
+    [DllImport("gestures")]
+    internal unsafe static extern void getFingerTips(Position* allFingerTips, ref int detectedFingerTipsCount);
 }
 
 // Define the structure to be sequential and with the correct byte size (2 ints = 4 bytes * 2 = 8 bytes)
@@ -49,6 +52,8 @@ public class OpenCVGestureDetection : MonoBehaviour {
 
     private bool _ready;
     private bool _confirmedMask = false;
+    private Position[] fingerTips;
+    private int maxFingerTipsCount = 5;
     public GameObject screen;
     public GameObject hand;
 
@@ -88,6 +93,8 @@ public class OpenCVGestureDetection : MonoBehaviour {
         handPos.X = 0;
         handPos.Y = 0;
 
+        fingerTips = new Position[maxFingerTipsCount];
+
         CameraResolution = new Vector2(camWidth, camHeight);
         _ready = true;
     }
@@ -122,13 +129,20 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 OpenCVInterop.drawHandContour();
                 OpenCVInterop.getHandCenter(ref handPos);
                 hand.transform.position = imageToScreenCoord(handPos.X, handPos.Y);
+
+                int detectedFingerTipsCount = 0;
+                fixed (Position* allFingerTips = fingerTips) {
+                    OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
+                    Debug.Log(detectedFingerTipsCount);
+                }
+
             }
             // if mask has not been confirmed show the normal feed with the ROIs
             else {
                 OpenCVInterop.showOverlayFeed();
             }
-            Debug.Log(handPos.X);
-            Debug.Log(handPos.Y);
+            //Debug.Log(handPos.X);
+            //Debug.Log(handPos.Y);
             // always show the binary mask preview
             OpenCVInterop.showBinaryFeed(hsvRange, thresholds);
 
