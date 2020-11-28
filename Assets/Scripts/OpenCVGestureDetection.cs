@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // Define the functions which can be called from the .dll.
 internal static class OpenCVInterop {
     [DllImport("gestures")]
-    internal static extern int openCam(ref int outCameraWidth, ref int outCameraHeight);
+    internal static extern int openCam(ref int outCameraWidth, ref int outCameraHeight, int camNumber);
 
     [DllImport("gestures")]
     internal static extern void closeCam();
@@ -66,7 +66,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
 
     void Awake() {
         int camWidth = 0, camHeight = 0;
-        int result = OpenCVInterop.openCam(ref camWidth, ref camHeight);
+        int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 1);
         if (result < 0) {
             if (result == -1) {
                 Debug.LogWarningFormat("[{0}] Failed to open camera stream.", GetType());
