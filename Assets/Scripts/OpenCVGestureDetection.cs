@@ -54,6 +54,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
     private bool _confirmedMask = false;
     private Position[] fingerTips;
     private int maxFingerTipsCount = 5;
+
     public GameObject screen;
     public GameObject hand;
 
@@ -135,16 +136,16 @@ public class OpenCVGestureDetection : MonoBehaviour {
                     OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
                     Debug.Log(detectedFingerTipsCount);
                     if(detectedFingerTipsCount == 0) {
-                        hand.GetComponent<Animator>().Play("Rock");
+                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Rock");
                     }
                     else if(detectedFingerTipsCount <= 4) {
-                        hand.GetComponent<Animator>().Play("Scissors");
+                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Scissors");
                     }
                     else if(detectedFingerTipsCount >= 5) {
-                        hand.GetComponent<Animator>().Play("Paper");
+                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Paper");
                     }
                     else {
-                        hand.GetComponent<Animator>().Play("Palm");
+                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Palm");
                     }
                 }
 
