@@ -134,6 +134,18 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 fixed (Position* allFingerTips = fingerTips) {
                     OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
                     Debug.Log(detectedFingerTipsCount);
+                    if(detectedFingerTipsCount == 0) {
+                        hand.GetComponent<Animator>().Play("Rock");
+                    }
+                    else if(detectedFingerTipsCount <= 4) {
+                        hand.GetComponent<Animator>().Play("Scissors");
+                    }
+                    else if(detectedFingerTipsCount >= 5) {
+                        hand.GetComponent<Animator>().Play("Paper");
+                    }
+                    else {
+                        hand.GetComponent<Animator>().Play("Palm");
+                    }
                 }
 
             }
