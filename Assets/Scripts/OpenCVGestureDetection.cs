@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 // Define the functions which can be called from the .dll.
 internal static class OpenCVInterop {
@@ -51,27 +52,47 @@ public class OpenCVGestureDetection : MonoBehaviour {
     public static Vector2 CameraResolution;
 
     private bool _ready;
-    private bool _confirmedMask = false;
+    private bool trackingPosition = false;
     private Position[] fingerTips;
     private int maxFingerTipsCount = 5;
-
-    public GameObject screen;
-    public GameObject hand;
+    private GestureCache gestureCache;
+    private int camWidth = 0; 
+    private int camHeight = 0;
+    private int currentCount = 0;
 
     HSVRange hsvRange;
     Thresholds thresholds;
     Position handPos;
 
-    public void setLowThreshold(float value) {
+    public bool IsTrackingPosition() {
+        return trackingPosition;
+    }
+
+    public int GetCamWidth() {
+        return this.camWidth;
+    }
+
+    public int GetCamHeight() {
+        return this.camHeight;
+    }
+
+    public Point GetHandPos() {
+        return new Point(this.handPos.X, this.handPos.Y);
+    }
+
+    public int GetFingerTipsCount() {
+        return this.currentCount;
+    }
+
+    public void SetLowThreshold(float value) {
         thresholds.lowThreshold = (int) value;
     }
 
-    public void setHighThreshold(float value) {
+    public void SetHighThreshold(float value) {
         thresholds.highThreshold = (int) value;
     }
 
     void Awake() {
-        int camWidth = 0, camHeight = 0;
         int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 1);
         if (result < 0) {
             if (result == -1) {
@@ -81,9 +102,6 @@ public class OpenCVGestureDetection : MonoBehaviour {
         }
 
         Debug.Log("Camera Resolution is:" + camWidth + " " + camHeight);
-        screen.transform.localScale = new Vector3(camWidth / 10, 1, camHeight / 10);
-
-        hand.transform.position = new Vector3(0, 0, 0);
 
         hsvRange.minH = 90F;
         hsvRange.maxH = 150F;
@@ -95,6 +113,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
         handPos.Y = 0;
 
         fingerTips = new Position[maxFingerTipsCount];
+        gestureCache = new GestureCache();
 
         CameraResolution = new Vector2(camWidth, camHeight);
         _ready = true;
@@ -106,10 +125,6 @@ public class OpenCVGestureDetection : MonoBehaviour {
         }
     }
 
-    Vector3 imageToScreenCoord(float x, float y) {
-        return new Vector3(x, -y, 0);
-    }
-
     void Update() {
         if (!_ready)
             return;
@@ -118,7 +133,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
         unsafe {
             //OpenCVInterop.capture();
             // use SPACE key to make mask of current HSV values in the ROIs
-            if (!_confirmedMask && Input.GetKeyDown(KeyCode.Space)) {
+            if (!trackingPosition && Input.GetKeyDown(KeyCode.Space)) {
                 hsvRange = OpenCVInterop.getMaskRange();
                 Debug.Log(hsvRange.minH);
                 Debug.Log(hsvRange.maxH);
@@ -126,27 +141,18 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 Debug.Log(hsvRange.maxS);
             }
             // draw contour if the mask has been confirmed and get the hand center
-            if (_confirmedMask) {
+            if (trackingPosition) {
                 OpenCVInterop.drawHandContour();
                 OpenCVInterop.getHandCenter(ref handPos);
-                hand.transform.position = imageToScreenCoord(handPos.X, handPos.Y);
-
+                //Debug.Log(handPos.X);
+                //Debug.Log(handPos.Y);
                 int detectedFingerTipsCount = 0;
                 fixed (Position* allFingerTips = fingerTips) {
                     OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
-                    Debug.Log(detectedFingerTipsCount);
-                    if(detectedFingerTipsCount == 0) {
-                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Rock");
-                    }
-                    else if(detectedFingerTipsCount <= 4) {
-                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Scissors");
-                    }
-                    else if(detectedFingerTipsCount >= 5) {
-                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Paper");
-                    }
-                    else {
-                        hand.transform.Find("Armature").GetComponent<Animator>().Play("Palm");
-                    }
+                    //Debug.Log(detectedFingerTipsCount);
+                    gestureCache.Add(detectedFingerTipsCount);
+                    currentCount = gestureCache.GetCachedGesture();
+                    Debug.Log(currentCount);
                 }
 
             }
@@ -161,7 +167,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
 
             // press RETURN key to confirm mask
             if (Input.GetKeyDown(KeyCode.Return)) {
-                _confirmedMask = true;
+                trackingPosition = true;
             }
         }
     }
