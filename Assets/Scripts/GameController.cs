@@ -17,6 +17,8 @@ public class GameController : MonoBehaviour
     {
         openCVGestureDetection = GetComponent<OpenCVGestureDetection>();
         screen.transform.localScale = new Vector3(openCVGestureDetection.GetCamWidth() / 10, 1, openCVGestureDetection.GetCamHeight() / 10);
+        Vector3 scale = screen.transform.localScale;
+        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);
 
         playerHand = Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         playerHand.transform.eulerAngles = new Vector3(-180, 270, 90);

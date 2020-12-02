@@ -331,63 +331,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &370107636
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 370107638}
-  - component: {fileID: 370107637}
-  - component: {fileID: 370107639}
-  m_Layer: 0
-  m_Name: ScreenManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &370107637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 370107636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b41da8169eda0744592a67c491594f6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &370107638
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 370107636}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1262886259}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &370107639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 370107636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a39fbe4334eac8449fffbf887372047, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  screen: {fileID: 1159082129}
 --- !u!1 &432428942
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,7 +723,7 @@ GameObject:
   - component: {fileID: 863750310}
   - component: {fileID: 863750311}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: lowThreshold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -858,7 +801,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 370107637}
+      - m_Target: {fileID: 1262886261}
         m_MethodName: SetLowThreshold
         m_Mode: 0
         m_Arguments:
@@ -1054,7 +997,7 @@ GameObject:
   - component: {fileID: 1159082130}
   - component: {fileID: 1159082134}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1177,7 +1120,7 @@ Transform:
   - {fileID: 103012305}
   - {fileID: 1576646979}
   m_Father: {fileID: 1262886259}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1262886258
 GameObject:
@@ -1211,7 +1154,6 @@ Transform:
   - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 1159082133}
-  - {fileID: 370107638}
   - {fileID: 1188696444}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -1328,7 +1270,7 @@ GameObject:
   - component: {fileID: 1546797574}
   - component: {fileID: 1546797575}
   m_Layer: 5
-  m_Name: Slider (1)
+  m_Name: highThreshold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1406,7 +1348,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 370107637}
+      - m_Target: {fileID: 1262886261}
         m_MethodName: SetHighThreshold
         m_Mode: 0
         m_Arguments:

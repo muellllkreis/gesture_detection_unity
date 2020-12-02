@@ -163,6 +163,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
             //Debug.Log(handPos.X);
             //Debug.Log(handPos.Y);
             // always show the binary mask preview
+            Debug.Log("Threshold" + thresholds.highThreshold);
             OpenCVInterop.showBinaryFeed(hsvRange, thresholds);
 
             // press RETURN key to confirm mask
