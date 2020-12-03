@@ -93,7 +93,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
     }
 
     void Awake() {
-        int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 1);
+        int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 0);
         if (result < 0) {
             if (result == -1) {
                 Debug.LogWarningFormat("[{0}] Failed to open camera stream.", GetType());
@@ -163,7 +163,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
             //Debug.Log(handPos.X);
             //Debug.Log(handPos.Y);
             // always show the binary mask preview
-            Debug.Log("Threshold" + thresholds.highThreshold);
+            //Debug.Log("Threshold" + thresholds.highThreshold);
             OpenCVInterop.showBinaryFeed(hsvRange, thresholds);
 
             // press RETURN key to confirm mask
