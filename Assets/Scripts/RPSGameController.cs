@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Drawing;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour
+public class RPSGameController : MonoBehaviour
 {
 
     OpenCVGestureDetection openCVGestureDetection;

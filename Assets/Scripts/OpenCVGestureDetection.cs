@@ -92,6 +92,11 @@ public class OpenCVGestureDetection : MonoBehaviour {
         thresholds.highThreshold = (int) value;
     }
 
+    public Point getIndexPosition()
+    {
+        return new Point(this.fingerTips[0].X, this.fingerTips[0].Y);
+    }
+
     void Awake() {
         int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 0);
         if (result < 0) {
