@@ -1207,6 +1207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41da8169eda0744592a67c491594f6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawingMode: 1
 --- !u!1 &1275198337
 GameObject:
   m_ObjectHideFlags: 0

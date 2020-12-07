@@ -26,10 +26,16 @@ internal static class OpenCVInterop {
     internal static extern void drawHandContour();
 
     [DllImport("gestures")]
+    internal static extern void drawIndex();
+
+    [DllImport("gestures")]
     internal static extern void getHandCenter(ref Position handPos);
 
     [DllImport("gestures")]
     internal unsafe static extern void getFingerTips(Position* allFingerTips, ref int detectedFingerTipsCount);
+
+    [DllImport("gestures")]
+    internal unsafe static extern void getFurthestFingertip(ref Position fingerPos);
 }
 
 // Define the structure to be sequential and with the correct byte size (2 ints = 4 bytes * 2 = 8 bytes)
@@ -52,8 +58,11 @@ public class OpenCVGestureDetection : MonoBehaviour {
     public static Vector2 CameraResolution;
 
     private bool _ready;
+    [SerializeField]
+    private bool drawingMode = false;
     private bool trackingPosition = false;
     private Position[] fingerTips;
+    private Position furthestFingertip;
     private int maxFingerTipsCount = 5;
     private GestureCache gestureCache;
     private int camWidth = 0; 
@@ -94,8 +103,8 @@ public class OpenCVGestureDetection : MonoBehaviour {
 
     public Point getIndexPosition()
     {
-        return new Point(this.fingerTips[0].X, this.fingerTips[0].Y);
-    }
+        return new Point(furthestFingertip.X, furthestFingertip.Y);
+    }    
 
     void Awake() {
         int result = OpenCVInterop.openCam(ref camWidth, ref camHeight, 0);
@@ -119,6 +128,9 @@ public class OpenCVGestureDetection : MonoBehaviour {
 
         fingerTips = new Position[maxFingerTipsCount];
         gestureCache = new GestureCache();
+
+        furthestFingertip.X = 0;
+        furthestFingertip.Y = 0;
 
         CameraResolution = new Vector2(camWidth, camHeight);
         _ready = true;
@@ -146,18 +158,28 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 Debug.Log(hsvRange.maxS);
             }
             // draw contour if the mask has been confirmed and get the hand center
-            if (trackingPosition) {
-                OpenCVInterop.drawHandContour();
-                OpenCVInterop.getHandCenter(ref handPos);
-                //Debug.Log(handPos.X);
-                //Debug.Log(handPos.Y);
-                int detectedFingerTipsCount = 0;
-                fixed (Position* allFingerTips = fingerTips) {
-                    OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
-                    //Debug.Log(detectedFingerTipsCount);
-                    gestureCache.Add(detectedFingerTipsCount);
-                    currentCount = gestureCache.GetCachedGesture();
-                    Debug.Log(currentCount);
+            if (trackingPosition) 
+            {
+                if (!drawingMode)
+                {
+                    OpenCVInterop.drawHandContour();
+                    OpenCVInterop.getHandCenter(ref handPos);
+                    //Debug.Log(handPos.X);
+                    //Debug.Log(handPos.Y);
+                    int detectedFingerTipsCount = 0;
+                    fixed (Position* allFingerTips = fingerTips)
+                    {
+                        OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
+                        //Debug.Log(detectedFingerTipsCount);
+                        gestureCache.Add(detectedFingerTipsCount);
+                        currentCount = gestureCache.GetCachedGesture();
+                        Debug.Log(currentCount);
+                    }
+                }
+                else
+                {
+                    OpenCVInterop.drawIndex();
+                    OpenCVInterop.getFurthestFingertip(ref furthestFingertip);
                 }
 
             }
