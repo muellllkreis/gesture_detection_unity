@@ -8,9 +8,7 @@ public class DrawingGameController : MonoBehaviour
 {
 
     OpenCVGestureDetection openCVGestureDetection;
-    public GameObject screen;
-    [SerializeField]
-    private GameObject background;
+    public GameObject screen;    
     //public GameObject handPrefab;
     [SerializeField]
     GameObject drawingPoint;
@@ -19,7 +17,7 @@ public class DrawingGameController : MonoBehaviour
     private Renderer screenRenderer;
     [SerializeField]
     private Canvas drawingCanvas;    
-    private int resolution = 512;
+    private int resolution = 2048;
     [SerializeField]
     private int brushSize = 10;
     [SerializeField]
@@ -32,10 +30,8 @@ public class DrawingGameController : MonoBehaviour
     {
         openCVGestureDetection = GetComponent<OpenCVGestureDetection>();
         screen.transform.localScale = new Vector3(openCVGestureDetection.GetCamWidth() / 10, 1, openCVGestureDetection.GetCamHeight() / 10);
-        Vector3 scale = screen.transform.localScale;
-        background.transform.localScale = scale * 2f;
-        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);
-        background.transform.position = screen.transform.position + new Vector3(0, 0, 2);
+        Vector3 scale = screen.transform.localScale;        
+        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);        
         screenRenderer = screen.GetComponent<Renderer>();
         drawingTexture = new Texture2D(resolution, resolution);                        
         drawingTexture.Apply();

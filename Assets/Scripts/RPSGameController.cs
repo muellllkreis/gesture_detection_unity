@@ -9,8 +9,6 @@ public class RPSGameController : MonoBehaviour
 
     OpenCVGestureDetection openCVGestureDetection;
     public GameObject screen;
-    [SerializeField]
-    private GameObject background;
     public GameObject handPrefab;
     public Material opponentMat;
     private GameObject playerHand;
@@ -21,6 +19,10 @@ public class RPSGameController : MonoBehaviour
     [SerializeField]
     private Text UIText;
     [SerializeField]
+    private Text PoseText;
+    [SerializeField]
+    private Text FingerText;
+    [SerializeField]
     private Text playerScoreText;
     [SerializeField]
     private Text IAScoreText;
@@ -29,10 +31,8 @@ public class RPSGameController : MonoBehaviour
     {
         openCVGestureDetection = GetComponent<OpenCVGestureDetection>();
         screen.transform.localScale = new Vector3(openCVGestureDetection.GetCamWidth() / 10, 1, openCVGestureDetection.GetCamHeight() / 10);
-        Vector3 scale = screen.transform.localScale;
-        background.transform.localScale = scale * 2f;
-        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);
-        background.transform.position = screen.transform.position + new Vector3(0, 0, 2);
+        Vector3 scale = screen.transform.localScale;        
+        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);        
 
         //player
         playerHand = Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -65,19 +65,23 @@ public class RPSGameController : MonoBehaviour
         if (fingerCount == 0)
         {
             playAnimation(handAnimator, "Rock");
+            PoseText.text = "ROCK";
         }
         else if (fingerCount <= 4)
         {
             playAnimation(handAnimator, "Scissors");            
+            PoseText.text = "SCISSORS";
         }
         else if (fingerCount >= 5)
         {
             playAnimation(handAnimator, "Paper");                        
+            PoseText.text = "PAPER";
         }
         else
         {
             playAnimation(handAnimator, "Palm");                                    
         }
+        FingerText.text = fingerCount.ToString();
     }
 
     void SetOpponentPosition(Vector3 playerPos) {
