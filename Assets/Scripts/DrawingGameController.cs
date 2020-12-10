@@ -10,7 +10,6 @@ public class DrawingGameController : MonoBehaviour
     OpenCVGestureDetection openCVGestureDetection;
     public GameObject screen;    
     //public GameObject handPrefab;
-    [SerializeField]
     GameObject drawingPoint;
     [SerializeField]
     GameObject screenBLcorner;
@@ -25,6 +24,8 @@ public class DrawingGameController : MonoBehaviour
     private UnityEngine.Color[] brushColors;
     Texture2D drawingTexture;
     private float camHeight, camWidth;
+    int fingerCount = 0;
+    int previousFingerCount = 0;
 
     void Start()
     {
@@ -46,11 +47,7 @@ public class DrawingGameController : MonoBehaviour
         camWidth = openCVGestureDetection.GetCamWidth();
 
         //brush
-        brushColors = new UnityEngine.Color[brushSize * brushSize];
-        for (int i = 0; i < brushColors.Length; i++)
-        {
-            brushColors[i] = brushColor;
-        }
+        setBrushColor(brushColor);
 
         Debug.Log("Scale: " + screen.transform.localScale.x + "," + screen.transform.localScale.z);
     }
@@ -64,6 +61,15 @@ public class DrawingGameController : MonoBehaviour
     {
         Vector3 velocity = Vector3.zero;
         hand.transform.position = Vector3.SmoothDamp(hand.transform.position, targetPosition, ref velocity, 0.3F);
+    }
+
+    void setBrushColor(UnityEngine.Color color)
+    {
+        brushColors = new UnityEngine.Color[brushSize * brushSize];
+        for (int i = 0; i < brushColors.Length; i++)
+        {
+            brushColors[i] = color;
+        }
     }
 
     void playAnimation(Animator handAnimator, string RPSPose)
@@ -95,15 +101,45 @@ public class DrawingGameController : MonoBehaviour
         }        
     }
 
-    
+    void resetCanvas()
+    {
+        for (int i = 0; i < resolution; i++)
+        {
+            for (int j = 0; j < resolution; j++)
+            {
+                drawingTexture.SetPixel(i, j, UnityEngine.Color.white);
+            }
+        }
+    }
+
+    void moveIndex(GameObject index, Vector3 targetPosition)
+    {
+        Vector3 velocity = Vector3.zero;
+        index.transform.position = Vector3.SmoothDamp(index.transform.position, targetPosition, ref velocity, 0.3F);
+    }
+
+
     void Update()
     {
         if (openCVGestureDetection.IsTrackingPosition())
         {
-            Point indexPos = openCVGestureDetection.getIndexPosition();                   
+            Point indexPos = openCVGestureDetection.getIndexPosition(); 
+            fingerCount = openCVGestureDetection.GetFingerTipsCount();
             Vector3 targetPosition = ImageToScreenCoord(indexPos.X, indexPos.Y);
-            moveHand(drawingPoint, targetPosition);            
+            moveIndex(drawingPoint, targetPosition);            
             drawOnCanvas(indexPos);
+
+            if (fingerCount >= 4 && previousFingerCount != fingerCount)
+            {
+                brushColor = new UnityEngine.Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+                setBrushColor(brushColor);
+            }
+            if (fingerCount == 0 && previousFingerCount != fingerCount)
+            {
+                resetCanvas();
+            }
+
+            previousFingerCount = fingerCount;
         }
     }
 }

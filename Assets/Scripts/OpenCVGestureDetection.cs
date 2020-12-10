@@ -179,6 +179,15 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 else
                 {
                     OpenCVInterop.drawIndex();
+                    int detectedFingerTipsCount = 0;
+                    fixed (Position* allFingerTips = fingerTips)
+                    {
+                        OpenCVInterop.getFingerTips(allFingerTips, ref detectedFingerTipsCount);
+                        //Debug.Log(detectedFingerTipsCount);
+                        gestureCache.Add(detectedFingerTipsCount);
+                        currentCount = gestureCache.GetCachedGesture();
+                        Debug.Log(currentCount);
+                    }
                     OpenCVInterop.getFurthestFingertip(ref furthestFingertip);
                 }
 
