@@ -26,13 +26,18 @@ public class RPSGameController : MonoBehaviour
     private Text playerScoreText;
     [SerializeField]
     private Text IAScoreText;
+    [SerializeField]
+    private Camera cam;
+    [SerializeField]
+    private ParticleSystem psEffect;
 
     void Start()
     {
         openCVGestureDetection = GetComponent<OpenCVGestureDetection>();
         screen.transform.localScale = new Vector3(openCVGestureDetection.GetCamWidth() / 10, 1, openCVGestureDetection.GetCamHeight() / 10);
         Vector3 scale = screen.transform.localScale;        
-        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);        
+        screen.transform.position = new Vector3((scale[0] / 2) * 10, -(scale[2] / 2) * 10, 0);
+        psEffect.Stop();
 
         //player
         playerHand = Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -54,6 +59,10 @@ public class RPSGameController : MonoBehaviour
         Debug.Log("Scale: " + screen.transform.localScale.x + "," + screen.transform.localScale.z);
 
         UIText.text = "";
+
+        psEffect.transform.parent = cam.transform;
+        psEffect.transform.localPosition = new Vector3(0, 0, 30);
+        
     }
 
     Vector3 ImageToScreenCoord(float x, float y) {
@@ -67,12 +76,12 @@ public class RPSGameController : MonoBehaviour
             playAnimation(handAnimator, "Rock");
             PoseText.text = "ROCK";
         }
-        else if (fingerCount <= 4)
+        else if (fingerCount < 4)
         {
             playAnimation(handAnimator, "Scissors");            
             PoseText.text = "SCISSORS";
         }
-        else if (fingerCount >= 5)
+        else if (fingerCount >= 4)
         {
             playAnimation(handAnimator, "Paper");                        
             PoseText.text = "PAPER";
@@ -155,6 +164,8 @@ public class RPSGameController : MonoBehaviour
                 IAPose = parameter.name;
             }
         }
+        int initialPlayerScore = playerScore;        
+        int initialOpponentScore = opponentScore;        
         if (playerPose != IAPose)
         {
             if (playerPose == "Rock")
@@ -172,6 +183,16 @@ public class RPSGameController : MonoBehaviour
                 if (IAPose == "Scissors") opponentScore++;
                 else playerScore++;
             }
+        }
+        if (playerScore > initialPlayerScore)
+        {
+            psEffect.startColor = new UnityEngine.Color(0, 255, 225);
+            StartCoroutine("PlayEffect", 1.5f);
+        }
+        else if (opponentScore > initialOpponentScore)
+        {
+            psEffect.startColor = UnityEngine.Color.red;
+            StartCoroutine("PlayEffect", 1.5f);
         }
         IAScoreText.text = opponentScore.ToString();
         playerScoreText.text = playerScore.ToString();
@@ -196,5 +217,12 @@ public class RPSGameController : MonoBehaviour
         playAnimation(opponentAnimator, Pose); 
         //determine who won this round
         choseWinner();        
+    }
+
+    IEnumerator PlayEffect(float seconds)
+    {
+        psEffect.Play();
+        yield return new WaitForSeconds(seconds);
+        psEffect.Stop();
     }
 }
