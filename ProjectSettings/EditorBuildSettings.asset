@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: c14e61b21dd2bd341840b147dd22b600
+  - enabled: 1
     path: Assets/Scenes/RockPaperScissors.unity
     guid: 38471462306220847be33a0784b1fb1d
+  - enabled: 1
+    path: Assets/Scenes/Drawing.unity
+    guid: 86e12fd5de882144a85cb5b52015bd5b
   m_configObjects: {}
