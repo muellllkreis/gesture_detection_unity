@@ -14,7 +14,7 @@ internal static class OpenCVInterop {
     internal static extern void capture();
 
     [DllImport("gestures")]
-    internal static extern void showOverlayFeed();
+    internal static extern void showOverlayFeed(bool removeBackground = false, float backgroundRemoveOffset = 15);
 
     [DllImport("gestures")]
     internal static extern HSVRange getMaskRange();
@@ -23,10 +23,10 @@ internal static class OpenCVInterop {
     internal static extern void showBinaryFeed(HSVRange hsv_range, Thresholds thresholds);
 
     [DllImport("gestures")]
-    internal static extern void drawHandContour();
+    internal static extern void drawHandContour(bool removeBackground = false, float backgroundRemoveOffset = 15);
 
     [DllImport("gestures")]
-    internal static extern void drawIndex();
+    internal static extern void drawIndex(bool removeBackground = false, float backgroundRemoveOffset = 15);
 
     [DllImport("gestures")]
     internal static extern void getHandCenter(ref Position handPos);
@@ -69,6 +69,9 @@ public class OpenCVGestureDetection : MonoBehaviour {
     private int camHeight = 0;
     private int currentCount = 0;
 
+    [SerializeField]
+    bool removeBackground = false;
+    float backgroundRemoveOffset = 15;
     HSVRange hsvRange;
     Thresholds thresholds;
     Position handPos;
@@ -93,9 +96,19 @@ public class OpenCVGestureDetection : MonoBehaviour {
         return this.currentCount;
     }
 
+    public void SwitchRemoveBackground()
+    {
+        removeBackground = !removeBackground;
+    }
+    public void SetBackgroundOffset(float value)
+    {
+        backgroundRemoveOffset = (int) value;
+    }
+
     public void SetLowThreshold(float value) {
         thresholds.lowThreshold = (int) value;
     }
+
 
     public void SetHighThreshold(float value) {
         thresholds.highThreshold = (int) value;
@@ -162,7 +175,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
             {
                 if (!drawingMode)
                 {
-                    OpenCVInterop.drawHandContour();
+                    OpenCVInterop.drawHandContour(removeBackground, backgroundRemoveOffset);
                     OpenCVInterop.getHandCenter(ref handPos);
                     //Debug.Log(handPos.X);
                     //Debug.Log(handPos.Y);
@@ -178,7 +191,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
                 }
                 else
                 {
-                    OpenCVInterop.drawIndex();
+                    OpenCVInterop.drawIndex(removeBackground, backgroundRemoveOffset);
                     int detectedFingerTipsCount = 0;
                     fixed (Position* allFingerTips = fingerTips)
                     {
@@ -194,7 +207,7 @@ public class OpenCVGestureDetection : MonoBehaviour {
             }
             // if mask has not been confirmed show the normal feed with the ROIs
             else {
-                OpenCVInterop.showOverlayFeed();
+                OpenCVInterop.showOverlayFeed(removeBackground, backgroundRemoveOffset);
             }
             //Debug.Log(handPos.X);
             //Debug.Log(handPos.Y);
